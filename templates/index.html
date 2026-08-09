@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURAJ COMMAND CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --glass-card: rgba(15, 23, 42, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --stark-cyan: #00F2FE;
+            --beast-gold: #FFD700;
+            --apple-blue: #007AFF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #security-lock {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lock-card {
+            background: var(--glass-card);
+            border: 1px solid var(--stark-cyan);
+            border-radius: 28px;
+            padding: 35px;
+            text-align: center;
+            max-width: 360px;
+        }
+        .iphone-card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--glass-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 28px;
+        }
+        .owner-badge {
+            display: inline-block;
+            background: rgba(0, 242, 254, 0.15);
+            border: 1px solid var(--stark-cyan);
+            color: var(--stark-cyan);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 100px;
+            margin-bottom: 8px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFF 30%, var(--stark-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .speed-hud {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .hud-item label { font-size: 10px; color: var(--text-muted); display: block; }
+        .hud-item span { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--beast-gold); }
+        .input-group { margin-bottom: 14px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+        input, textarea, select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 14px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+        }
+        textarea { height: 90px; resize: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn {
+            width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 800; font-size: 15px; cursor: pointer; margin-bottom: 10px;
+        }
+        .btn-ai { background: rgba(255, 215, 0, 0.1); border: 1px solid var(--beast-gold); color: var(--beast-gold); }
+        .btn-rocket { background: linear-gradient(135deg, var(--stark-cyan) 0%, var(--apple-blue) 100%); color: #000; }
+        .btn-red-alert { background: linear-gradient(135deg, #FF0055 0%, #FF2E93 100%); color: white; }
+        .terminal-box {
+            background: #000; border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #10B981; height: 80px; overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div id="security-lock">
+    <div class="lock-card">
+        <span class="owner-badge">RESTRICTED ACCESS</span>
+        <h2 style="margin: 10px 0; font-size: 20px;">SURAJ OWNER KEY</h2>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">अपना ओनर पिन दर्ज करें</p>
+        <input type="password" id="passcode" placeholder="••••" style="text-align: center; font-size: 22px; margin-bottom: 15px;">
+        <button class="btn btn-rocket" onclick="unlockSystem()">UNLOCK HUD</button>
+    </div>
+</div>
+
+<div class="iphone-card">
+    <div style="text-align: center;">
+        <span class="owner-badge">6TH TO 12TH AUTOMATION</span>
+        <h1>SURAJ COMMAND CENTER</h1>
+    </div>
+
+    <div class="speed-hud">
+        <div class="hud-item"><label>SPEED</label><span>1,000,000 /s</span></div>
+        <div class="hud-item"><label>TARGET</label><span id="target-count">ALL (6th-12th)</span></div>
+        <div class="hud-item"><label>DELIVERED</label><span id="delivered-count" style="color: #10B981;">0</span></div>
+    </div>
+
+    <div class="grid-2 input-group">
+        <div>
+            <label>🎯 टारगेट क्लास</label>
+            <select id="target-select" onchange="updateTarget()">
+                <option value="ALL (6th-12th)">पूरा स्कूल (6th से 12th)</option>
+                <option value="JUNIOR (6-8)">6th से 8th (Junior)</option>
+                <option value="HIGH SCHOOL (9-10)">9th & 10th (High School)</option>
+                <option value="INTER (11-12)">11th & 12th (Inter)</option>
+                <option value="CLASS 6TH">Class 6th Only</option>
+                <option value="CLASS 7TH">Class 7th Only</option>
+                <option value="CLASS 8TH">Class 8th Only</option>
+                <option value="CLASS 9TH">Class 9th Only</option>
+                <option value="CLASS 10TH">Class 10th Only</option>
+                <option value="CLASS 11TH">Class 11th Only</option>
+                <option value="CLASS 12TH">Class 12th Only</option>
+                <option value="TEACHERS">All Teachers Group</option>
+            </select>
+        </div>
+        <div>
+            <label>🎙️ AI VOICE</label>
+            <select id="voice-toggle">
+                <option value="ON">Auto Voice: ON</option>
+                <option value="OFF">Auto Voice: OFF</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>📝 संदेश / नोटिस</label>
+        <textarea id="message" placeholder="यहाँ मैसेज लिखें..."></textarea>
+    </div>
+
+    <div class="input-group">
+        <label>🔗 लिंक</label>
+        <input type="url" id="link" placeholder="https://...">
+    </div>
+
+    <button class="btn btn-ai" onclick="optimizeAI()">⚡ 1-Click MrBeast Optimization</button>
+    <button class="btn btn-rocket" onclick="fireRocketBroadcast()">🚀 FIRE ROCKET BROADCAST NOW</button>
+    <button class="btn btn-red-alert" onclick="triggerRedAlert()">🚨 1-TAP RED ALERT EMERGENCY</button>
+
+    <div class="terminal-box" id="logs">
+        > STARK ENGINE ONLINE.<br>> Ready for Classes 6th to 12th.
+    </div>
+</div>
+
+<script>
+    const SECRET_OWNER_PIN = "2026";
+
+    function unlockSystem() {
+        const pin = document.getElementById('passcode').value;
+        if(pin === SECRET_OWNER_PIN) {
+            document.getElementById('security-lock').style.display = 'none';
+        } else {
+            alert("❌ गलत पासवर्ड!");
+        }
+    }
+
+    function updateTarget() {
+        const target = document.getElementById('target-select').value;
+        document.getElementById('target-count').innerText = target;
+        log("Target updated to: " + target);
+    }
+
+    function log(msg) {
+        const logs = document.getElementById('logs');
+        logs.innerHTML += "<br>> " + msg;
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    function optimizeAI() {
+        let msg = document.getElementById('message').value;
+        if(!msg) {
+            log("ERROR: पहले मैसेज लिखें!");
+            return;
+        }
+        document.getElementById('message').value = "🚨 [OFFICIAL NOTICE | SURAJ HQ] 🚨\n\n" + msg;
+        log("Formatting Done!");
+    }
+
+    function fireRocketBroadcast() {
+        const target = document.getElementById('target-select').value;
+        log("Broadcasting to " + target + "...");
+        setTimeout(() => {
+            document.getElementById('delivered-count').innerText = "1,850";
+            log("✅ Dispatched in 0.3 seconds!");
+        }, 300);
+    }
+
+    function triggerRedAlert() {
+        document.getElementById('message').value = "🚨 EMERGENCY NOTICE: भारी बारिश के कारण आज स्कूल बंद रहेगा।";
+        log("RED ALERT MODE!");
+        fireRocketBroadcast();
+    }
+</script>
+
+</body>
+  </html>
+          
