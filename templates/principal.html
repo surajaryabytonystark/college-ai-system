@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मुरारी कॉलेज - वॉइस व मैसेज डिस्पैचर</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; }
+        .card { background: #ffffff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        h2 { color: #1e293b; font-size: 24px; margin-bottom: 20px; }
+        textarea { width: 90%; height: 140px; padding: 15px; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; outline: none; resize: none; margin-bottom: 20px; }
+        textarea:focus { border-color: #25d366; }
+        .btn-broadcast { background: #25d366; color: white; border: none; padding: 20px 40px; font-size: 22px; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4); transition: 0.2s; }
+        .btn-broadcast:active { transform: scale(0.98); }
+        .status { margin-top: 20px; font-size: 18px; font-weight: bold; }
+        .mic-btn { background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 30px; font-size: 16px; cursor: pointer; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>📢 स्कूल नोटिस डिस्पैचर</h2>
+    
+    <button class="mic-btn" onclick="startSpeech()">🎙️ बोलकर टाइप करें (Mic)</button>
+    
+    <textarea id="noticeText" placeholder="यहाँ मैसेज लिखें या बोलें..."></textarea>
+    
+    <button class="btn-broadcast" onclick="sendBroadcast()" id="sendBtn">📢 भेजें (1-Click)</button>
+    
+    <div class="status" id="statusMessage"></div>
+</div>
+
+<script>
+    function startSpeech() {
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'hi-IN';
+            recognition.start();
+            document.getElementById('statusMessage').innerText = "सुन रहा हूँ, बोलिए...";
+            
+            recognition.onresult = function(event) {
+                document.getElementById('noticeText').value = event.results[0][0].transcript;
+                document.getElementById('statusMessage').innerText = "आवाज़ रिकॉर्ड हो गई!";
+            };
+        } else {
+            alert("Speech recognition is not supported in this browser.");
+        }
+    }
+
+    async function sendBroadcast() {
+        const text = document.getElementById('noticeText').value;
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('statusMessage');
+
+        if(!text.trim()) {
+            status.style.color = "red";
+            status.innerText = "कृपया पहले मैसेज लिखें या बोलें!";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "भेजा जा रहा है... ⏳";
+        status.style.color = "#333";
+        status.innerText = "AI वॉइस तैयार हो रही है और मैसेज भेजा जा रहा है...";
+
+        try {
+            const response = await fetch('/api/dispatch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text })
+            });
+
+            const result = await response.json();
+
+            if(result.success) {
+                status.style.color = "green";
+                status.innerText = "✅ सूचना सभी व्हाट्सएप ग्रुप्स में पहुँच गई!";
+                document.getElementById('noticeText').value = "";
+            } else {
+                status.style.color = "red";
+                status.innerText = "❌ त्रुटि: " + result.error;
+            }
+        } catch (err) {
+            status.style.color = "red";
+            status.innerText = "❌ नेटवर्क समस्या!";
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "📢 भेजें (1-Click)";
+        }
+    }
+</script>
+
+</body>
+  </html>
+  
